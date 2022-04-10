@@ -12,7 +12,7 @@ img.save("ip_add.jpg")
 
 print(ip_address + " Enter this ip address in mobile")
 
-password = input("Enter the password: ")
+
 
 import pickle # This library is for saving or load the model into a file
 
@@ -23,6 +23,13 @@ with open(r"iForest_Model", "rb") as input_file: # defining a input_file variabl
 connection = pymysql.connect(host="localhost", user="admin", passwd="password", database="pd_database")
 connection.autocommit = True
 cursor = connection.cursor()
+
+searchIp = "SELECT ip_address FROM raspberrypi WHERE ip_address = '{}';".format(ip_address)
+cursor.execute(searchIp)
+ipRow = cursor.fetchone()
+
+if (len(ipRow) > 0):
+    password = input("Enter the password: ")
 
 insertRPI = "INSERT INTO raspberrypi (ip_address, status, password) SELECT * FROM (SELECT '{}' as ip_address, '{}' as status, '{}' as password) as tmp WHERE NOT EXISTS (SELECT ip_address FROM raspberrypi WHERE ip_address = '{}') LIMIT 1;".format(ip_address, "not_connected", password, ip_address)
 cursor.execute(insertRPI)
