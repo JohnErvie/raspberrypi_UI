@@ -112,7 +112,7 @@ class MainWindow(QMainWindow):
         self.passwordLabel.setGeometry(20, 20 + self.pixmap.height() + 40, self.pixmap.width(), 40)
 
         self.button = QPushButton("Stop", self)
-        self.button.setGeometry(20+30, 20 + self.pixmap.height() + 40, 40, 40)
+        self.button.setGeometry(20+60, 20 + self.pixmap.height() + 40 + 40, 60, 40)
         self.button.clicked.connect(self.stopStartFuction)
 
 
