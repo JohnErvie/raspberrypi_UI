@@ -112,7 +112,7 @@ class MainWindow(QMainWindow):
         self.passwordLabel.setGeometry(20, 20 + self.pixmap.height() + 40, self.pixmap.width(), 40)
 
         self.button = QPushButton("Stop", self)
-        self.button.setGeometry(20+60, 20 + self.pixmap.height() + 40 + 40, 60, 40)
+        self.button.setGeometry(20+80, 20 + self.pixmap.height() + 40 + 40, 60, 40)
         self.button.clicked.connect(self.stopStartFuction)
 
 
@@ -137,6 +137,7 @@ class MainWindow(QMainWindow):
         self.timer.start(1000)
 
     def mainFunction(self):
+        print("running")
         PC = random.random()*(200-0)+0 # declaring PC variable as power consumption value
         PC = float("{:.2f}".format(PC)) #convert into 2 decimal places
         #PC = 70 
@@ -167,7 +168,7 @@ class MainWindow(QMainWindow):
             self.button.setText("Start")
             self.start = False # pause the timer
         else:
-            self.button.setText("Start")
+            self.button.setText("Stop")
             self.start = True # start the timer
   
 if __name__ == "__main__":
