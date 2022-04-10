@@ -53,6 +53,12 @@ class MainWindow(QMainWindow):
         # setting geometry
         self.resize(600, 400)
 
+        # RPI Info
+        searcQuery = "SELECT * FROM raspberrypi WHERE ip_address LIKE '{}' and status LIKE '{}';".format(ip_address, "connected")
+        cursor.execute(searcQuery)
+
+        self.RPIrecords = cursor.fetchone()
+
         # check ip address if exist
         if (len(ipRow) == None):
             #password = input("Enter the password: ")
@@ -60,7 +66,7 @@ class MainWindow(QMainWindow):
   
         # calling method
         self.UiComponents()
-        #self.Timer()
+        self.Timer()
 
         self.center()
 
@@ -98,7 +104,17 @@ class MainWindow(QMainWindow):
         self.ipLabel.setText("IP Address: " + ip_address)
         self.ipLabel.setAlignment(Qt.AlignCenter)
         self.ipLabel.setGeometry(20, 20 + self.pixmap.height(), self.pixmap.width(), 40)
-        self.ipLabel.setStyleSheet("border : 5px solid black")
+        #self.ipLabel.setStyleSheet("border : 5px solid black")
+
+        self.passwordLabel = QLabel(self)
+        self.passwordLabel.setText("Password: " + self.RPIrecords[2])
+        self.passwordLabel.setAlignment(Qt.AlignCenter)
+        self.passwordLabel.setGeometry(20, 20 + self.pixmap.height() + 40, self.pixmap.width(), 40)
+
+        self.button = QPushButton("Stop", self)
+        self.button.setGeometry(20+30, 20 + self.pixmap.height() + 40, 40, 40)
+        self.button.clicked.connect(self.stopStartFuction)
+
 
     def ipCheck(self):
         self.passwordLE = QLineEdit(self)
@@ -107,7 +123,7 @@ class MainWindow(QMainWindow):
         text, ok = QInputDialog.getText(self, 'Password', 'Enter the password')
         if ok:
             self.passwordLE.setText(str(text))
-'''
+
     def Timer(self):
         self.start = True
 
@@ -115,11 +131,45 @@ class MainWindow(QMainWindow):
         self.timer = QTimer(self)
 
         # adding action to timer
-        self.timer.timeout.connect(self.variables)
+        self.timer.timeout.connect(self.mainFunction)
 
         # update the timer every second
         self.timer.start(1000)
-'''  
+
+    def mainFunction(self):
+        PC = random.random()*(200-0)+0 # declaring PC variable as power consumption value
+        PC = float("{:.2f}".format(PC)) #convert into 2 decimal places
+        #PC = 70 
+        dateToday = datetime.now() # getting the current and declare as datetime variable
+        dateNow = date.today() # today's date
+        TimeNow = (datetime.time(datetime.now())) # current time
+
+        # using now the model 
+        Voltage_score = model.decision_function([[PC]]) # Computing the Average anomaly score of PC variable of the base classifiers
+
+        Voltage_anomaly_score = model.predict([[PC]]) # Predict if a particular sample is an outlier or not (anomaly or normal)
+
+        if Voltage_anomaly_score == -1: 
+            PC_status = 'Anomaly' # if the Voltage_anomaly_score is equal to -1 then this is a Anamaly
+
+        else:
+            PC_status = 'Normal' # if the Voltage_anomaly_score is equal to 1 then this is a Normal Data
+
+        # queries for inserting values
+        insertPC = "INSERT INTO pc_table(rpi_id, datetime, date, time, power_consumption, power_consumption_score, power_consumption_anomaly_score, status) VALUES({}, '{}', '{}', '{}', {}, {}, {}, '{}');".format(self.RPIrecords[0], dateToday, dateNow, TimeNow, float(PC), float(Voltage_score[0]), int(Voltage_anomaly_score[0]), PC_status)
+
+        #executing the quires
+        cursor.execute(insertPC)
+        connection.commit()
+
+    def stopStartFuction(self):
+        if (self.start == True):
+            self.button.setText("Start")
+            self.start = False # pause the timer
+        else:
+            self.button.setText("Start")
+            self.start = True # start the timer
+  
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     #app.setStyleSheet(stylesheet)
