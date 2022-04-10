@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
 import sys
+import os
 
 import random
 from datetime import * # this library is for the current time
@@ -12,8 +13,19 @@ import qrcode
 
 ip_address = socket.gethostbyname(socket.gethostname())
 
-img = qrcode.make(ip_address)
-img.save("ip_add.jpg")
+qr = qrcode.QRCode(
+    version=1,
+    error_correction=qrcode.constants.ERROR_CORRECT_L,
+    box_size=10,
+    border=2,
+    )
+qr.add_data(ip_address)
+qr.make(fit=True)
+
+image = qr.make_image(fill_color="black", back_color="white")
+
+#img = qrcode.make(ip_address)
+image.save("ip_add.png")
 
 import pickle # This library is for saving or load the model into a file
 
@@ -45,10 +57,16 @@ class MainWindow(QMainWindow):
         # creating label
         self.img_QR = QLabel(self)
 
-        self.pixmap = QPixmap('ip_add.jpg')
+        self.pixmap = QPixmap(r"ip_add.png")
         self.img_QR.setPixmap(self.pixmap)
-        self.img_QR.resize(self.pixmap.width(),self.pixmap.height())
+        print(self.pixmap.width(),self.pixmap.height())
+        self.img_QR.setGeometry(20,20,self.pixmap.width(),self.pixmap.height())
         
+        self.ipLabel = QLabel(self)
+        self.ipLabel.setText("IP Address: " + ip_address)
+        self.ipLabel.setAlignment(Qt.AlignCenter)
+        self.ipLabel.setGeometry(20, 20 + self.pixmap.height(), self.pixmap.width(), 40)
+        self.ipLabel.setStyleSheet("border : 5px solid black")
   
 if __name__ == "__main__":
     app = QApplication(sys.argv)
