@@ -137,39 +137,41 @@ class MainWindow(QMainWindow):
         self.timer.start(1000)
 
     def mainFunction(self):
-        print("running")
-        PC = random.random()*(200-0)+0 # declaring PC variable as power consumption value
-        PC = float("{:.2f}".format(PC)) #convert into 2 decimal places
-        #PC = 70 
-        dateToday = datetime.now() # getting the current and declare as datetime variable
-        dateNow = date.today() # today's date
-        TimeNow = (datetime.time(datetime.now())) # current time
+        if self.start:
+            PC = random.random()*(200-0)+0 # declaring PC variable as power consumption value
+            PC = float("{:.2f}".format(PC)) #convert into 2 decimal places
+            #PC = 70 
+            dateToday = datetime.now() # getting the current and declare as datetime variable
+            dateNow = date.today() # today's date
+            TimeNow = (datetime.time(datetime.now())) # current time
 
-        # using now the model 
-        Voltage_score = model.decision_function([[PC]]) # Computing the Average anomaly score of PC variable of the base classifiers
+            # using now the model 
+            Voltage_score = model.decision_function([[PC]]) # Computing the Average anomaly score of PC variable of the base classifiers
 
-        Voltage_anomaly_score = model.predict([[PC]]) # Predict if a particular sample is an outlier or not (anomaly or normal)
+            Voltage_anomaly_score = model.predict([[PC]]) # Predict if a particular sample is an outlier or not (anomaly or normal)
 
-        if Voltage_anomaly_score == -1: 
-            PC_status = 'Anomaly' # if the Voltage_anomaly_score is equal to -1 then this is a Anamaly
+            if Voltage_anomaly_score == -1: 
+                PC_status = 'Anomaly' # if the Voltage_anomaly_score is equal to -1 then this is a Anamaly
 
-        else:
-            PC_status = 'Normal' # if the Voltage_anomaly_score is equal to 1 then this is a Normal Data
+            else:
+                PC_status = 'Normal' # if the Voltage_anomaly_score is equal to 1 then this is a Normal Data
 
-        # queries for inserting values
-        insertPC = "INSERT INTO pc_table(rpi_id, datetime, date, time, power_consumption, power_consumption_score, power_consumption_anomaly_score, status) VALUES({}, '{}', '{}', '{}', {}, {}, {}, '{}');".format(self.RPIrecords[0], dateToday, dateNow, TimeNow, float(PC), float(Voltage_score[0]), int(Voltage_anomaly_score[0]), PC_status)
+            # queries for inserting values
+            insertPC = "INSERT INTO pc_table(rpi_id, datetime, date, time, power_consumption, power_consumption_score, power_consumption_anomaly_score, status) VALUES({}, '{}', '{}', '{}', {}, {}, {}, '{}');".format(self.RPIrecords[0], dateToday, dateNow, TimeNow, float(PC), float(Voltage_score[0]), int(Voltage_anomaly_score[0]), PC_status)
 
-        #executing the quires
-        cursor.execute(insertPC)
-        connection.commit()
+            #executing the quires
+            cursor.execute(insertPC)
+            connection.commit()
 
     def stopStartFuction(self):
         if (self.start == True):
             self.button.setText("Start")
             self.start = False # pause the timer
+            #self.timer.stop()
         else:
             self.button.setText("Stop")
             self.start = True # start the timer
+            #self.timer.start(1000)
   
 if __name__ == "__main__":
     app = QApplication(sys.argv)
