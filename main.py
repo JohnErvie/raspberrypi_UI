@@ -3,6 +3,24 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import * 
 import sys
 
+import random
+from datetime import * # this library is for the current time
+import pymysql
+import time
+import socket
+import qrcode
+
+ip_address = socket.gethostbyname(socket.gethostname())
+
+img = qrcode.make(ip_address)
+img.save("ip_add.jpg")
+
+import pickle # This library is for saving or load the model into a file
+
+with open(r"iForest_Model", "rb") as input_file: # defining a input_file variable as the filename of the current model with a read parameter
+    model = pickle.load(input_file) # loading the model and define as model variable
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -14,7 +32,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(100, 100, 600, 400)
   
         # calling method
-        #self.UiComponents()
+        self.UiComponents()
 
         # opening window in maximized size
         self.showMaximized()
@@ -24,16 +42,12 @@ class MainWindow(QMainWindow):
   
     # method for widgets
     def UiComponents(self):
-  
         # creating label
-        label = QLabel("Label", self)
-  
-        # setting geometry to label
-        label.setGeometry(100, 100, 120, 40)
-  
-        # adding border to label
-        label.setStyleSheet("border : 2px solid black")
-  
+        self.img_QR = QLabel(self)
+
+        self.pixmap = QPixmap('ip_add.jpg')
+        self.img_QR.setPixmap(self.pixmap)
+        self.img_QR.resize(self.pixmap.width(),self.pixmap.height())
         
   
 if __name__ == "__main__":
