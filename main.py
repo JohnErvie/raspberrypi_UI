@@ -54,13 +54,13 @@ class MainWindow(QMainWindow):
         self.resize(600, 400)
 
         # check ip address if exist
-        if (len(ipRow) > 0):
+        if (len(ipRow) == None):
             #password = input("Enter the password: ")
             self.ipCheck() 
   
         # calling method
         self.UiComponents()
-        self.Timer()
+        #self.Timer()
 
         self.center()
 
@@ -107,7 +107,7 @@ class MainWindow(QMainWindow):
         text, ok = QInputDialog.getText(self, 'Password', 'Enter the password')
         if ok:
             self.passwordLE.setText(str(text))
-
+'''
     def Timer(self):
         self.start = True
 
@@ -119,7 +119,7 @@ class MainWindow(QMainWindow):
 
         # update the timer every second
         self.timer.start(1000)
-  
+'''  
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     #app.setStyleSheet(stylesheet)

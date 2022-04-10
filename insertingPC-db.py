@@ -28,7 +28,7 @@ searchIp = "SELECT ip_address FROM raspberrypi WHERE ip_address = '{}';".format(
 cursor.execute(searchIp)
 ipRow = cursor.fetchone()
 
-if (len(ipRow) > 0):
+if (len(ipRow) == None):
     password = input("Enter the password: ")
 
 insertRPI = "INSERT INTO raspberrypi (ip_address, status, password) SELECT * FROM (SELECT '{}' as ip_address, '{}' as status, '{}' as password) as tmp WHERE NOT EXISTS (SELECT ip_address FROM raspberrypi WHERE ip_address = '{}') LIMIT 1;".format(ip_address, "not_connected", password, ip_address)
